@@ -10,5 +10,7 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
   integrations: [icon(), tailwind(), db()],
-  outDir: './dist'
+  image: {
+    service: { entrypoint: 'astro/assets/services/noop' },
+  },
 });
