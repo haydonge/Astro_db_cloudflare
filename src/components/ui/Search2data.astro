@@ -1,0 +1,70 @@
+---
+import Button from "./Button.astro";
+import TextInput from "./TextInput.astro";
+---
+
+<dialog id="dialog3" class="bg-gray-800 w-full sm:w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 rounded-lg">
+  <div class="p-4 sm:p-6 md:p-8 grid gap-6">
+    <form class="grid gap-4" id="search-form">
+      <h2 class="text-xl text-theme-accent font-bold leading-tight">
+        搜索库存
+      </h2>
+      <TextInput name="Part Numbers" inputId={Math.random()} />
+      <TextInput name="Link Descriptions" inputId={Math.random()} />
+      <div class="flex gap-4 flex-wrap">
+        <Button intent="primary" id="close-dialog3" type="button">Close</Button>
+        <Button intent="accent" type="submit">Search</Button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<script>
+
+  // 获取表单元素和按钮元素
+  const searchform = document.querySelector("#search-form") as HTMLFormElement;
+  const openDialogBtn3 = document.getElementById("search-dialog" ) as HTMLButtonElement;
+  const closeDialogBtn3 = document.getElementById("close-dialog3") as HTMLButtonElement;
+  const dialog3 = document.getElementById("dialog3") as HTMLDialogElement;
+
+  // 点击打开对话框按钮时显示对话框
+  openDialogBtn3.addEventListener("click", () => dialog3.showModal());
+// 点击关闭对话框按钮时关闭对话框
+  closeDialogBtn3.addEventListener("click", () => dialog3.close());
+// 点击对话框外部时关闭对话框
+  dialog3.addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      dialog3.close();
+    }
+  });
+
+  import sanitizeHtml from "sanitize-html";
+  // 提交表单时的事件监听器
+  searchform.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      // 获取表单数据
+      const formData = new FormData(searchform);
+      const partnumber = sanitizeHtml(formData.get("part-numbers") as string);
+         
+      // 检查表单数据类型并发送请求
+      if (
+        typeof partnumber === "string" 
+      ) {
+      
+       const url = new URL("/search", window.location.origin);
+       url.searchParams.set("q", partnumber);
+       window.location.assign(url.toString());
+
+
+
+      }
+    } catch (e) {       // 捕获异常并弹出警告
+      if (e instanceof Error) {
+        alert(e.message);
+        dialog3.close();
+      }
+      console.error(e);
+    }
+  });
+</script>

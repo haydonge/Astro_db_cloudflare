@@ -1,0 +1,131 @@
+---
+import { getImage } from "astro:assets";
+import dots from "../assets/dots.png";
+import Footer from "../components/Footer.astro";
+import Dialog2Stock from "../components/ui/Dialog2stock.astro";
+import Uploadexcel from "../components/ui/Uploadgooglesheet.astro";
+import Search2Data from "@/components/ui/Search2data.astro";
+const dotsImage = await getImage({ src: dots, format: "avif" });
+import NavBar from "../components/ui/NavBar.astro";
+import Sidebar from "../components/ui/Sidebar.astro";
+const { title = "库存管理", description = "库存管理系统" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="msapplication-TileColor" content="#F46633" />
+    <meta name="theme-color" content="#202020" />
+    <meta name="color-scheme" content="dark" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <style>
+      @view-transition {
+         navigation: auto; /* enabled! */
+         }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .bg-gradient {
+        background: linear-gradient(to bottom, black, var(--theme-base));
+      }
+      @media (min-width: 640px) {
+        .container {
+          padding: 2rem;
+        }
+        header {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+        .button-group {
+          justify-content: flex-end;
+          gap: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-gradient text-theme-text text-base relative">
+    <NavBar />
+
+    <div
+      style={`background-image: url(${dotsImage.src}); -webkit-mask-image:-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))`}
+      class="absolute left-0 h-60 right-0 opacity-40 mix-blend-difference -z-10"
+    >
+    </div>
+    <div class="min-h-screen relative ">
+      <br>
+      
+      <!-- <header class="py-8">
+        <div class="container">
+          <h1 class="text-theme-accent font-bold text-4xl [text-shadow:_0_10px_15px_black]">
+            库存管理系统
+          </h1>
+          <div class="button-group">
+            <Button intent="accent" id="open-dialog">增加订单</Button>
+            <Button intent="accent" id="upload-dialog">批量上传</Button>
+            <Button intent="accent" id="search-dialog">搜索数据库</Button>
+          </div>
+        </div>
+      </header> -->
+      <body class="bg-gray-100 font-sans">
+        
+        <div class="flex h-screen">
+            
+            <!-- Sidebar -->
+            <Sidebar />
+            
+            <!-- Main Content -->
+            <div class="flex-1">
+                <div class="p-6">
+                    <!-- <h1 class="text-xl font-bold">主要内容区域</h1>
+                     -->
+      
+                    <main>
+                       <slot />  
+                       <Footer />                     
+                      <Dialog2Stock />
+                      <Uploadexcel />
+                      <Search2Data />  
+                     
+                    </main>
+                </div>
+           </div>
+            
+        </div>
+         
+    </div>
+    <div
+      style={`background-image: url(${dotsImage.src}); -webkit-mask-image:-webkit-gradient(linear, left top, left bottom, to(rgba(0,0,0,1)), from(rgba(0,0,0,0)))`}
+      class="absolute left-0 h-60 bottom-0 right-0 opacity-30 mix-blend-difference -z-10"
+    >
+    </div>
+  </body>
+</html>

@@ -1,0 +1,229 @@
+---
+import StockCard from "../components/ui/StockCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StockTable from "../components/ui/stockTable.astro";
+import { Stockonhand } from "astro:db";
+import { db } from "astro:db";
+import UpdateDiaglog from "../components/ui/UpdateDiaglog.astro";
+import Button from "@/components/ui/Button.astro";
+type Stockt = {
+  id: number;
+  partnumber: string;
+  description: string;
+  qty: number;
+  url: string;
+  safeqty: number;
+  types:string;
+};
+
+interface Props {
+  stock: Stockt | null;
+}
+
+const { stock } = Astro.props as Props;
+// 从数据库获取默认数据
+const defaultStocks = await db.select().from(Stockonhand);
+const filteredStocks =  defaultStocks;
+
+---
+
+<BaseLayout>
+  <main class="flex flex-col items-center space-y-4 px-4 md:px-0">
+    <form class="form flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-2xl" id="form1">
+        <label for="search" class="sr-only">Search DataBase</label>
+        <input 
+            type="text"
+            required
+            minlength="2"
+            maxlength="24"
+            name="search"
+            id="search"
+            placeholder="Enter a search term…"
+            class="border border-white px-3 py-2 rounded-md w-full sm:w-auto"
+        />
+        <Button intent="accent" type="submit" class="w-full sm:w-auto">Search</Button>
+    </form>
+
+    <p id="searchReadout" class="text-center"></p>
+</main>
+
+<section aria-label="Search Results" class="overflow-x-auto mt-8">
+    <div class="min-w-full overflow-hidden overflow-x-auto">
+        <table class="min-w-full text-left table-auto">
+            <thead>
+                <tr class="text-sm sm:text-base border-b-2 border-gray-300">
+                    <th class="px-2 sm:px-4 md:px-6 py-3">ID</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">Part Number</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">Description</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">Qty</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">SafeQty</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">URL</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">TYPES</th>
+                    <th class="px-2 sm:px-4 md:px-6 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody id="searchResults" class="text-sm sm:text-base"></tbody>
+        </table>
+    </div>
+    <div id="stockTableContainer" class="mt-8">
+        <!-- <StockTable stocks={filteredStocks}/> -->
+    </div>
+</section>
+
+<UpdateDiaglog stock={null} />
+  
+<script>
+  //selector
+  const search = document.querySelector("#search") as HTMLInputElement;
+  const searchsubmit =document.querySelector("#form1") as HTMLFormElement;
+  const searchResult =document.querySelector("#searchResults")!; //非空声明
+
+  
+
+  type Stockt = {
+  id: number;
+  partnumber: string;
+  description: string;
+  qty: number;
+  url: string;
+  safeqty: number;
+  types:string;
+};
+
+  // let SEARCH_DATA;
+      
+      import sanitizeHtml from "sanitize-html";
+      // @ts-ignore
+      import DOMPurify from "dompurify";
+  
+
+    function updateDocumentTitle(search:string) {
+      document.title = search
+      ?`Search Result for "${search}"`:"Search the database";
+    }
+
+
+
+     function updateSearchPageURL(search:string) {
+				const url = new URL(window.location.href);
+				url.searchParams.set("q", search);
+				window.history.replaceState(null, "", url);
+       }
+
+
+       function generateSearchList(result:Stockt[]):string {
+        return result.map((r:Stockt) => {
+            const { id, partnumber, description, qty, url, safeqty,types } = r;
+
+           return `
+            <tr  class="text-center">
+                <td class="px-2 md:px-6 py-4">${id}</td>
+                <td class="px-2 md:px-6 py-4">${partnumber}</td>
+                <td class="px-2 md:px-6 py-4">${description}</td>
+                <td class="px-2 md:px-6 py-4">${qty}</td>
+                <td class="px-2 md:px-6 py-4">${safeqty}</td>
+                <td class="px-2 md:px-6 py-4"> <a href=${url} class="text-blue-500 hover:underline mr-4"> Link </a> </td>
+                <td class="px-2 md:px-6 py-4">${types}</td>
+                <td>  <button
+                  data-update
+                  data-id=${id}
+                  data-partnumber=${partnumber}
+                  data-description=${description}
+                  data-qty=${qty}
+                  data-url=${url}
+                  data-safeqty=${safeqty}
+                  data-types=${types}
+                  classes="absolute -right-1 -bottom-1 border-4 border-theme-base hover:scale-105 active:scale-95 ring-offset-2"
+                  aria-label={"Update Link: ${partnumber}"}
+                  class="text-red-500 hover:text-red-700"             
+                }> Update </button>
+              
+                </td>
+            </tr>
+        `;
+    }).join(" ");
+}
+
+function attachUpdateEventListeners() {
+      const updateBtns = document.querySelectorAll("[data-update]");
+      updateBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const stocks = {
+            id: btn.getAttribute("data-id"),
+            partnumber: btn.getAttribute("data-partnumber"),
+            description: btn.getAttribute("data-description"),
+            qty: btn.getAttribute("data-qty"),
+            url: btn.getAttribute("data-url"),
+            safeqty: btn.getAttribute("data-safeqty"),
+            types:btn.getAttribute("data-types"),
+          };
+          const dialog2 = document.getElementById("dialog2") as HTMLDialogElement;
+          if (dialog2) {
+            const formupdate :any = dialog2.querySelector("form");
+            formupdate.querySelector("[name='id']").value = stocks.id;
+            formupdate.querySelector("[name='partnumber']").value = stocks.partnumber;
+            formupdate.querySelector("[name='description']").value = stocks.description;
+            formupdate.querySelector("[name='qty']").value = stocks.qty;
+            formupdate.querySelector("[name='url']").value = stocks.url;
+            formupdate.querySelector("[name='safeqty']").value = stocks.safeqty;
+            formupdate.querySelector("[name='types']").value = stocks.types;
+            dialog2.showModal();
+          }
+        });
+      });
+    }
+      
+
+    async function fetchSearchResults(search_word:string) {
+				if (search_word.length === 0) return;
+				  // searchResult.innerHTML =SPINNER;
+					try {
+						const res =  await fetch(`/api/searchdata.json`,{
+              method: "SEARCH",
+              headers: {"Content-Type": "application/json",   },
+              body: JSON.stringify(search_word )
+              });
+            const { success, data, message } = await res.json();
+						const results = data;
+            // updateStockTable(SEARCH_DATA);
+            searchResult.innerHTML = results.length >0 ? generateSearchList(results): "Not Found Data"
+            attachUpdateEventListeners(); //重点
+					} catch (e) {
+						console.error(e);
+					}		
+			}
+
+
+
+     window.addEventListener("DOMContentLoaded", () => {
+       const urlParams = DOMPurify.sanitize(
+         new URLSearchParams(window.location.search).get("q") as string );
+        fetchSearchResults(urlParams);
+        updateDocumentTitle(urlParams);
+        search.value =urlParams;
+        search.focus();
+       });
+     
+
+      searchsubmit.addEventListener("submit", async (e) => {
+        e.preventDefault();
+       try {
+        const searchValue = DOMPurify.sanitize(search.value)
+        updateDocumentTitle(searchValue);
+        const urlParams = new URLSearchParams(window.location.search).get("q") ;
+				fetchSearchResults(searchValue);
+        // search.value = searchValue;
+				updateSearchPageURL(searchValue);
+
+        } catch (e) {       // 捕获异常并弹出警告
+      if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
+			});
+
+
+</script>
+
+</BaseLayout>

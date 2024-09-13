@@ -1,0 +1,93 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BaseLayout1 from "@/layouts/BaseLayout1.astro";
+const plans = [
+  {
+    title: 'Starter',
+    price: '$49 /month',
+    description: 'Perfect for startups',
+    features: [
+      'Lifetime free',
+      'Up to 3 users',
+      'Unlimited Pages',
+      'Astro Sub domain',
+      'Basic Integrations',
+      'Community Support'
+    ],
+    buttonText: 'Get Started',
+    isPopular: false
+  },
+  {
+    title: 'Starter',
+    price: '$49 /month',
+    description: 'Perfect for startups',
+    features: [
+      'Lifetime free',
+      'Up to 3 users',
+      'Unlimited Pages',
+      'Astro Sub domain',
+      'Basic Integrations',
+      'Community Support'
+    ],
+    buttonText: 'Get Started',
+    isPopular: false
+  },
+  {
+    title: 'Business',
+    price: '$149 /month',
+    description: 'For serious businesses',
+    features: [
+      'All Free Features',
+      'Up to 20 users',
+      '20 Custom domains',
+      'Unlimited Collaborators',
+      'Advanced Integrations',
+      'Priority Support'
+    ],
+    buttonText: 'Get Started',
+    isPopular: true
+  },
+  {
+    title: 'Enterprise',
+    price: 'Custom',
+    description: 'Suitable for Enterprise solutions',
+    features: [
+      'All Pro Features',
+      'Unlimited Custom domains',
+      '99.99% Uptime SLA',
+      'SAML & SSO Integration',
+      'Dedicated Account Manager',
+      '24/7 Phone Support'
+    ],
+    buttonText: 'Contact Us',
+    isPopular: false
+  }
+];
+---
+
+<section class="text-center py-12 bg-gray-100">
+  <h2 class="text-3xl font-bold mb-4">Pricing</h2>
+  <p class="mb-12 text-lg text-gray-700">Simple & Predictable pricing. No Surprises.</p>
+  <div class="flex flex-wrap justify-center space-x-6">
+    {plans.map(plan => (
+      <div class={`border rounded-lg p-6 w-80 mb-6 ${plan.isPopular ? 'border-red-500 bg-yellow-50 shadow-lg' : 'border-gray-300 bg-white'} mx-3`}>
+        <h3 class="text-xl font-semibold mb-2">{plan.title}</h3>
+        <p class="text-2xl font-bold mb-4 text-gray-900">{plan.price}</p>
+        <p class="mb-6 text-gray-600">{plan.description}</p>
+        <ul class="mb-6 text-left">
+          {plan.features.map(feature => (
+            <li class="mb-2 flex items-center">
+              <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              {feature}
+            </li>
+          ))}
+        </ul>
+        <button class={`py-2 px-4 rounded ${plan.isPopular ? 'bg-yellow-600 text-white hover:bg-yellow-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+          {plan.buttonText}
+        </button>
+      </div>
+    ))}
+  </div>
+</section>
