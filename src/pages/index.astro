@@ -1,7 +1,7 @@
 ---
 
 import StockCard from "../components/ui/StockCard.astro";
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from "../layouts/BaseLayout-ok.astro";
 import StockTable from "../components/ui/stockTable.astro";
 import { Stockonhand } from "astro:db";
 import { db } from "astro:db";
@@ -33,13 +33,14 @@ const Stocks =  defaultStocks;
 ---
 
 <BaseLayout>
-  <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+  <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 bg-white">
     {Stocks.map((item:any) => <StockCard stock={item} />)}
-  </div>
 
   <br>
-  
+<!--   
   <StockTable stocks={Stocks}/>
+ -->
+
 
 
 </BaseLayout>

@@ -12,106 +12,94 @@ type Props = {
   stocks: Stock[];
 };
 const { stocks } = Astro.props;
-
 ---
 
-<table class="min-w-full ">
-  <thead>
-    <tr>
-      <th class="py-2">Part Number</th>
-      <th class="py-2">Description</th>
-      <th class="py-2">Onhand Qty</th>
-      <th class="py-2">Safe Qty</th>
-      <th class="py-2">URL</th>
-      <th class="py-2">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {stocks.map((stock) => (
-      <tr key:any[]={stock.id} class="border-t">
-        <th class="py-2">{stock.partnumber}</th>
-        <th class="py-2">{stock.description}</th>
-        <th class="py-2">{stock.qty}</th>
-        <th class="py-2">{stock.safeqty}</th>
-        <th class="py-2">
-          <a href={stock.url} class="text-blue-500 hover:underline mr-4">
-            Open Link
-          </a> 
-          </th>
-          <th>
-          <button
-            class="text-red-500 hover:text-red-700"
-            open-dialog
-            data-id={stock.id}
-            aria-label={`Update Link: ${stock.partnumber}`}
-          >
-          
-            <Icon name="check" size={24} /> 
-          
-          </button>
-
-          <button
-            class="text-red-500 hover:text-red-700"
-            data-delete
-            data-id={stock.id}
-            aria-label={`Delete Link: ${stock.partnumber}`}
-          >
-            <Icon name="trash" size={24} />
-          </button>
-        </th>
+<div class="overflow-x-auto shadow-md sm:rounded-lg">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">Part Number</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-100 uppercase tracking-wider">Description</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Onhand Qty</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Safe Qty</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
       </tr>
-    ))}
-  </tbody>
-</table>
-<!-- <UpdateDiaglog stock={null} /> -->
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      {stocks.map((stock, index) => (
+        <tr class={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{stock.partnumber}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">{stock.description}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">{stock.qty}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{stock.safeqty}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <a href={stock.url} class="text-blue-600 hover:text-blue-900" target="_blank" rel="noopener noreferrer">
+              Open Link
+            </a> 
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button
+              class="text-indigo-600 hover:text-indigo-900 mr-3"
+              open-dialog
+              data-id={stock.id}
+              aria-label={`Update Link: ${stock.partnumber}`}
+            >
+              <Icon name="check" size={20} />
+            </button>
+            <button
+              class="text-red-600 hover:text-red-900"
+              data-delete
+              data-id={stock.id}
+              aria-label={`Delete Link: ${stock.partnumber}`}
+            >
+              <Icon name="trash" size={20} />
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
 <script>
-  // delete link
-  const deleteBtns = document.querySelectorAll(
-    "[data-delete]"
-  ) as NodeListOf<HTMLButtonElement>;
+  // Delete link
+  const deleteBtns = document.querySelectorAll("[data-delete]");
   
   deleteBtns.forEach((btn) => {
     btn.addEventListener("click", async (e) => {
+      if (!confirm("Are you sure you want to delete this item?")) return;
+      
       const id = btn.getAttribute("data-id");
       try {
-        await fetch(`/api/${id}.json`, {
+        const response = await fetch(`/api/${id}.json`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
           },
         });
-        console.log("deleted");
-        btn.closest("tr")?.remove();
+        
+        if (response.ok) {
+          console.log("Deleted successfully");
+          btn.closest("tr")?.remove();
+        } else {
+          throw new Error("Failed to delete");
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error:", error);
+        alert("Failed to delete the item. Please try again.");
       }
     });
   });
 
-
-   const updateBtns = document.querySelectorAll(
-    "[data-update]"
-  ) as NodeListOf<HTMLButtonElement>;
+  // Update link (placeholder for future implementation)
+  const updateBtns = document.querySelectorAll("[open-dialog]");
   
-    updateBtns.forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
+  updateBtns.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
       const id = btn.getAttribute("data-id");
-      console.log(id);
-      // try {
-      //   await fetch(`/api/${id}.json`, {
-      //     method: "PATCH",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //   });
-      //   console.log("deleted");
-      //   // btn.closest("tr")?.remove();
-      // } catch (error) {
-      //   console.error(error);
-      // }
-
-      
+      console.log("Update item with ID:", id);
+      // Implement update logic here
     });
-    });
-
+  });
 </script>

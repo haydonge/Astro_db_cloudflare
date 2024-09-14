@@ -24,7 +24,7 @@ const { stock } = Astro.props;
 <article
   class="p-4 sm:p-6 bg-theme-base text-theme-text shadow-black/60 shadow-xl rounded-md grid gap-6 relative"
 >
-  <div class="grid gap-2">
+  <div class="grid gap-2 text-gray-600">
     <h2 class="leading-tight font-bold text-theme-accent text-xl text-balance">
       {stock.partnumber}
     </h2>
@@ -34,9 +34,10 @@ const { stock } = Astro.props;
 
   </div>
   <div class="flex items-center gap-2">
-     <span class="px-2 py-1 bg-green-500 text-white rounded text-x hover:opacity-90"><a href={`/search/?q=${stock.types}`}={stock.types}>{stock.types}</a></span>
+     <!-- <span class="px-2 py-1 bg-green-500 text-white rounded text-x hover:opacity-90"><a href={`/search/?q=${stock.types}`}={stock.types}>{stock.types}</a></span> -->
 
-  <Stock href={stock.url} intent="primary" size="medium">图片</Stock>
+  <Stock href={`/search/?q=${stock.types}`} intent="primary" size="medium">{stock.types}</Stock>
+  <Stock href={stock.url} intent="primary" size="medium">link</Stock>
   <!-- <Button
     intent="accent"
     size="square"
